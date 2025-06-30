@@ -1,6 +1,6 @@
-Contributing to Odoo
+Contributing to WorkWare
 ====================
-
+WorkWare is a fork of Odoo ERP Software. 
 [Full contribution guidelines](https://github.com/odoo/odoo/wiki/Contributing)
 
 TL;DR
