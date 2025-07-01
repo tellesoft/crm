@@ -91,7 +91,7 @@
             <a target="_blank"
                 t-attf-href="http://www.odoo.com?utm_source=db&amp;utm_medium=#{_utm_medium}"
                 class="badge text-bg-light">
-                <img alt="Odoo"
+                <img alt="Workify"
                     src="/web/static/img/odoo_logo_tiny.png"
                     width="62" height="20"
                     style="width: auto; height: 1em; vertical-align: baseline;"/>
@@ -362,9 +362,9 @@
                 <meta name="viewport" content="width=device-width, initial-scale=1"/>
             </t>
             <div class="card">
-                <img t-attf-src="data:image/png;base64,{{odoo_icon}}" alt="Odoo logo"/>
+                <img t-attf-src="data:image/png;base64,{{odoo_icon}}" alt="Workify logo"/>
                 <h1>You are offline</h1>
-                <p>Check your network connection and come back here. Odoo will load as soon as you're back online.</p>
+                <p>Check your network connection and come back here. Workify will load as soon as you're back online.</p>
                 <button onclick="location.reload()">Check again</button>
             </div>
         </t>
