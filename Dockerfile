@@ -1,13 +1,20 @@
 FROM odoo:18.0
 
-# Set environment variables (optional)
-ENV HOST=0.0.0.0 \
-    PORT=8069
+# Set environment variables (optional but useful for consistency)
+ENV ODOO_VERSION=18.0 \
+    ODOO_ADDONS_PATH=/mnt/extra-addons
 
-# If you have custom addons in the repo, uncomment this:
-# COPY ./custom-addons /mnt/extra-addons
-# RUN chown -R odoo:odoo /mnt/extra-addons
+# Create directory for extra add-ons if needed
+RUN mkdir -p $ODOO_ADDONS_PATH
 
+# Copy your custom modules into the container
+COPY ./addons $ODOO_ADDONS_PATH
+
+# Ensure permissions
+RUN chown -R odoo:odoo $ODOO_ADDONS_PATH
+
+# Expose the default Odoo port
 EXPOSE 8069
 
-CMD ["odoo"]
+# Start Odoo with custom parameters if needed
+CMD ["odoo", "--addons-path=/usr/lib/python3/dist-packages/odoo/addons,/mnt/extra-addons"]
