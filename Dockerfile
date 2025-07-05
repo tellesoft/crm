@@ -1,16 +1,36 @@
-FROM odoo:18.0
+FROM python:3.10-slim
 
-ENV ODOO_VERSION=18.0 \
-    ODOO_ADDONS_PATH=/mnt/extra-addons
+ENV DEBIAN_FRONTEND=noninteractive
 
-# Create addons directory and copy as odoo user
-USER root
-RUN mkdir -p $ODOO_ADDONS_PATH
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpq-dev \
+    libxml2-dev \
+    libxslt1-dev \
+    zlib1g-dev \
+    libsasl2-dev \
+    libldap2-dev \
+    wkhtmltopdf \
+    git \
+    curl \
+    npm \
+    node-less \
+    python3-dev \
+    libjpeg-dev \
+    libffi-dev \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Skip chown — just switch user first, then copy
-USER odoo
-COPY --chown=odoo:odoo ./addons $ODOO_ADDONS_PATH
+# Install Python packages
+COPY requirements.txt /tmp/
+RUN pip install --upgrade pip && pip install -r /tmp/requirements.txt
 
-EXPOSE 8069
+# Add Workify source code
+COPY . /opt/workify
+WORKDIR /opt/workify
 
-CMD ["odoo", "--addons-path=/usr/lib/python3/dist-packages/odoo/addons,/mnt/extra-addons"]
+# Make sure addons path is known
+ENV ADDONS_PATH=/opt/workify/addons
+
+# Run the app
+CMD ["python", "odoo-bin", "-c", "/opt/workify/debian/odoo.conf"]
