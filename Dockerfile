@@ -1,15 +1,13 @@
 FROM python:3.10
 
-# Set environment variables
 ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-# Set working directory
 WORKDIR /opt/odoo
 
-# Install system dependencies
+# System dependencies (removed libjpeg8-dev)
 RUN apt-get update && apt-get install -y \
     git \
     wget \
@@ -23,7 +21,6 @@ RUN apt-get update && apt-get install -y \
     libjpeg-dev \
     libffi-dev \
     libssl-dev \
-    libjpeg8-dev \
     liblcms2-dev \
     libblas-dev \
     libatlas-base-dev \
@@ -34,30 +31,20 @@ RUN apt-get update && apt-get install -y \
     libxrender1 \
     xfonts-75dpi \
     xfonts-base \
-    libpq-dev \
-    libjpeg-dev \
     libjpeg62-turbo-dev \
     libpng-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first for caching
-COPY requirements.txt /tmp/requirements.txt
-
-# Install pip dependencies (with gevent pin)
-RUN pip install --upgrade pip \
-    && pip install wheel \
-    && pip install "gevent==21.12.0" \
-    && pip install -r /tmp/requirements.txt
+# Install dependencies
+COPY requirements.txt /tmp/
+RUN pip install --upgrade pip && \
+    pip install wheel && \
+    pip install -r /tmp/requirements.txt
 
 # Copy source code
 COPY . /opt/odoo
 
-# Create odoo user (optional for non-root execution)
-RUN adduser --disabled-password --gecos "" odoo \
-    && chown -R odoo:odoo /opt/odoo
+EXPOSE 8069
 
-USER odoo
-
-# Default command to run odoo
-CMD ["python", "odoo-bin"]
+CMD ["python3", "odoo-bin", "-c", "/opt/odoo/debian/odoo.conf"]
