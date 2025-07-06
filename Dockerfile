@@ -7,7 +7,7 @@ ENV PYTHONUNBUFFERED 1
 
 WORKDIR /opt/odoo
 
-# System dependencies (removed libjpeg8-dev)
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     git \
     wget \
@@ -36,15 +36,17 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install dependencies
-COPY requirements.txt /tmp/
-RUN pip install --upgrade pip && \
-    pip install wheel && \
-    pip install -r /tmp/requirements.txt
-
-# Copy source code
+# Copy your forked Odoo source code into the image
 COPY . /opt/odoo
 
+# Install Python dependencies (gevent preinstalled to avoid Cython compile error)
+RUN pip install --upgrade pip && \
+    pip install wheel && \
+    pip install "gevent==23.9.1" && \
+    pip install -r /tmp/requirements.txt
+
+# Expose Odoo default port
 EXPOSE 8069
 
-CMD ["python3", "odoo-bin", "-c", "/opt/odoo/debian/odoo.conf"]
+# Default command
+CMD ["python", "odoo-bin"]
