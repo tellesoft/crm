@@ -31,22 +31,22 @@ RUN apt-get update && apt-get install -y \
     libxrender1 \
     xfonts-75dpi \
     xfonts-base \
-    libjpeg62-turbo-dev \
     libpng-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy your forked Odoo source code into the image
-COPY . /opt/odoo
+# Copy requirements.txt from repo root
+COPY ./requirements.txt /opt/odoo/requirements.txt
 
-# Install Python dependencies (gevent preinstalled to avoid Cython compile error)
+# Install Python dependencies
 RUN pip install --upgrade pip && \
     pip install wheel && \
     pip install "gevent==23.9.1" && \
-    pip install -r /tmp/requirements.txt
+    pip install -r requirements.txt
 
-# Expose Odoo default port
+# Copy the rest of the code
+COPY . /opt/odoo/
+
 EXPOSE 8069
 
-# Default command
-CMD ["python", "odoo-bin"]
+CMD ["python", "odoo-bin", "-c", "odoo.conf"]
