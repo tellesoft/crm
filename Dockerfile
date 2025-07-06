@@ -1,5 +1,5 @@
 # Start from the official Odoo 16 image
-FROM odoo:16
+FROM odoo:18.0
 
 # (Optional) Switch to root to install custom packages
 USER root
