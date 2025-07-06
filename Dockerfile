@@ -1,36 +1,44 @@
-FROM python:3.10-slim
+FROM python:3.10
 
-ENV DEBIAN_FRONTEND=noninteractive
+LABEL maintainer="info@odoo.com"
 
-# Install dependencies
-RUN apt-get update && apt-get install -y \
+ENV LANG C.UTF-8
+
+# Install required system packages
+RUN apt-get update && \
+    apt-get install -y \
+    git \
     build-essential \
-    libpq-dev \
+    python3-dev \
+    libev-dev \
+    libldap2-dev \
+    libsasl2-dev \
     libxml2-dev \
     libxslt1-dev \
-    zlib1g-dev \
-    libsasl2-dev \
-    libldap2-dev \
-    wkhtmltopdf \
-    git \
-    curl \
-    npm \
-    node-less \
-    python3-dev \
     libjpeg-dev \
+    zlib1g-dev \
+    libpq-dev \
     libffi-dev \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    libssl-dev \
+    wget \
+    node-less \
+    npm && \
+    apt-get clean
 
-# Install Python packages
+# Upgrade pip and install Python dependencies
 COPY requirements.txt /tmp/
-RUN pip install --upgrade pip && pip install -r /tmp/requirements.txt
+RUN pip install --upgrade pip && \
+    pip install wheel && \
+    pip install -r /tmp/requirements.txt
 
-# Add Workify source code
-COPY . /opt/workify
-WORKDIR /opt/workify
+# Set workdir
+WORKDIR /odoo
 
-# Make sure addons path is known
-ENV ADDONS_PATH=/opt/workify/addons
+# Copy source code
+COPY . /odoo
 
-# Run the app
-CMD ["python", "odoo-bin", "-c", "/opt/workify/debian/odoo.conf"]
+# Expose ports
+EXPOSE 8069 8071
+
+# Default command
+CMD ["python", "odoo-bin"]
